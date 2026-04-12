@@ -9,12 +9,28 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+# settings.py
+from datetime import timedelta
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# settings.py
+from datetime import timedelta
+import os
+from pathlib import Path
+from dotenv import load_dotenv  # 1. Add this import
+
+# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# 2. ACTUALLY LOAD THE FILE
+env_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path=env_path) 
+
+# Now these debug prints will actually work
+print(f"Loading .env from: {env_path}")
+print(f"File exists: {env_path.exists()}")
+print(f"DATABASE HOST LOADED: {os.environ.get('DB_HOST')}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -27,7 +43,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,10 +62,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'library'
+    'library',
+    'rest_framework',
+    'corsheaders',
+    'django.contrib.sessions',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -47,8 +77,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     
 ]
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 ROOT_URLCONF = 'ResearchDoc.urls'
 
 TEMPLATES = [
@@ -75,11 +108,10 @@ WSGI_APPLICATION = 'ResearchDoc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neondb',
-        'USER': 'neondb_owner',
-        'PASSWORD': 'npg_LpY0nGw9tvel',
-        'HOST': 'ep-silent-king-ajs1g63m-pooler.c-3.us-east-2.aws.neon.tech',
-        
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
     }
 }
 

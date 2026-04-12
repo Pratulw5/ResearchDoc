@@ -7,6 +7,9 @@ import ComparePage from "./comparepage/comparepage";
 import LoginPage from "./login/LoginPage";
 import { useState } from "react";
 import * as Types from "./utils/types";
+import axios from "axios";
+import { useEffect } from "react";
+
 
 const NAV_ITEMS: { id: Types.Page; label: string; icon: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: "⊞" },
@@ -17,9 +20,71 @@ const NAV_ITEMS: { id: Types.Page; label: string; icon: string }[] = [
   { id: "compare", label: "Compare", icon: "⊟" },
 ];
 export default function App() {
+
   const [authed, setAuthed] = useState(false);
   const [page, setPage] = useState<Types.Page>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  async function signOut() {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    setAuthed(false);
+  }
+  async function checkAuth() {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("access");
+
+      if (!token) {
+        setAuthed(false);
+        return;
+      }
+
+      await axios.get("http://localhost:8000/api/protected/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // ✅ token valid
+      setAuthed(true);
+
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        try {
+          const refresh = localStorage.getItem("refresh");
+
+          const refreshRes = await axios.post(
+            "http://localhost:8000/login/token/refresh/",
+            { refresh }
+          );
+
+          const newAccess = refreshRes.data.access;
+          localStorage.setItem("access", newAccess);
+
+          // retry check
+          setAuthed(true);
+
+        } catch {
+          // ❌ refresh failed
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+          setAuthed(false);
+        }
+      } else {
+        setAuthed(false);
+      }
+
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
+    checkAuth();
+  }, []);
+  if (loading) return <div>Loading...</div>;
+
 
   if (!authed) return <LoginPage onLogin={() => setAuthed(true)} />;
 
@@ -67,7 +132,7 @@ export default function App() {
               <p className="text-xs text-slate-500 truncate">Pro Plan</p>
             </div>
           </div>
-          <button onClick={() => setAuthed(false)} className="w-full mt-2 text-xs text-slate-500 hover:text-slate-300 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors text-left">
+          <button onClick={() => signOut()} className="w-full mt-2 text-xs text-slate-500 hover:text-slate-300 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors text-left">
             Sign out
           </button>
         </div>

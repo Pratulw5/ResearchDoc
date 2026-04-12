@@ -2,6 +2,7 @@ import { StatusBadge } from "../common/StatusBadge"
 import * as Types from "../utils/types";
 
 type DashboardPageProps = {
+
     setPage: React.Dispatch<React.SetStateAction<Types.Page>>;
 };
 const MOCK_PAPERS: Types.Paper[] = [
