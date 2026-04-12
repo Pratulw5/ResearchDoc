@@ -21,13 +21,13 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             let res;
             if (tab === "signin") {
                 // Login API
-                res = await axios.post("http://localhost:8000/login/signin/", {
+                res = await axios.post("http://localhost:8000/accounts/login/signin/", {
                     username: email,
                     password,
                 });
             } else {
                 // Signup API
-                res = await axios.post("http://localhost:8000/login/signup/", {
+                res = await axios.post("http://localhost:8000/accounts/login/signup/", {
                     username: email,
                     email: email,
                     password,

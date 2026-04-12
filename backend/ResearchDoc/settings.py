@@ -13,11 +13,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
-
-# settings.py
-from datetime import timedelta
-import os
-from pathlib import Path
 from dotenv import load_dotenv  # 1. Add this import
 
 # Build paths
@@ -27,10 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = BASE_DIR / '.env'
 load_dotenv(dotenv_path=env_path) 
 
-# Now these debug prints will actually work
-print(f"Loading .env from: {env_path}")
-print(f"File exists: {env_path.exists()}")
-print(f"DATABASE HOST LOADED: {os.environ.get('DB_HOST')}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
