@@ -1,11 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.tokens import RefreshToken
-
+User = get_user_model()
 # Helper to create JWT tokens
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
