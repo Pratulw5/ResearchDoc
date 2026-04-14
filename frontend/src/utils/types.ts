@@ -1,3 +1,9 @@
+export type Page = "dashboard" | "upload" | "library" | "search" | "chat" | "compare";
+export type Status = "processed" | "indexing" | "pending";
+export type Color = "teal" | "sky" | "amber" | "indigo";
+export type tagColor = "teal" | "sky" | "amber" | "rose" | "indigo";
+export type label = string;
+
 export type Paper = {
     id: number;
     title: string;
@@ -8,20 +14,17 @@ export type Paper = {
     pages: number;
     size: string;
 };
-export type Status = "processed" | "indexing" | "pending";
-export type Color = "indigo" | "emerald" | "violet" | "amber";
-export type UploadFile = {
-    id: number;
-    name: string;
-    size: string;
-    progress: number;
-};
-export type tagColor = "indigo" | "emerald" | "amber" | "sky" | "rose";
-export type label = String;
+
 export type SearchResult = {
     paper: string;
     excerpt: string;
     similarity: number;
     page: number;
 };
-export type Page = "dashboard" | "upload" | "library" | "search" | "chat" | "compare";
+
+export type UploadFile = {
+    id: number;
+    name: string;
+    size: string;
+    progress: number;
+};
