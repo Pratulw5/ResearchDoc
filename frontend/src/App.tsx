@@ -36,7 +36,7 @@ export default function App() {
       setLoading(true);
       const token = localStorage.getItem("access");
       if (!token) { setAuthed(false); return; }
-
+      console.log("Backend URL:", import.meta.env.VITE_VITE_BACKEND_URL);
       await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/protected/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
