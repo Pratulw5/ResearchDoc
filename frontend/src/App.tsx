@@ -37,7 +37,7 @@ export default function App() {
       const token = localStorage.getItem("access");
       if (!token) { setAuthed(false); return; }
 
-      await axios.get("http://localhost:8000/api/protected/", {
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/protected/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAuthed(true);
@@ -46,7 +46,7 @@ export default function App() {
         try {
           const refresh = localStorage.getItem("refresh");
           const refreshRes = await axios.post(
-            "http://localhost:8000/login/token/refresh/",
+            `${import.meta.env.VITE_BACKEND_URL}/login/token/refresh/`,
             { refresh }
           );
           localStorage.setItem("access", refreshRes.data.access);
