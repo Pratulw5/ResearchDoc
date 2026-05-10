@@ -22,15 +22,40 @@ class LoginAPIView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+
+        if not username or not password:
+            return Response(
+                {"error": "Username and password required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if user exists
+        try:
+            user_obj = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User does not exist"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Check password
         user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, user)  # Optional session
-            tokens = get_tokens_for_user(user)  # JWT tokens
-            return Response({
-                "message": "Login successful",
-                **tokens
-            }, status=status.HTTP_200_OK)
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not user:
+            return Response(
+                {"error": "Incorrect password"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Success
+        login(request, user)
+
+        tokens = get_tokens_for_user(user)
+
+        return Response({
+            "message": "Login successful",
+            **tokens
+        }, status=status.HTTP_200_OK)
 
 # ------------------------
 # Logout View

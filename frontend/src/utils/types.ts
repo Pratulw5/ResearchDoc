@@ -1,4 +1,4 @@
-export type Page = "dashboard" | "upload" | "library" | "search" | "chat" | "compare";
+export type Page = "dashboard" | "upload" | "projects" | "search" | "chat" | "compare";
 export type Status = "processed" | "indexing" | "pending";
 export type Color = "teal" | "sky" | "amber" | "indigo";
 export type tagColor = "teal" | "sky" | "amber" | "rose" | "indigo";

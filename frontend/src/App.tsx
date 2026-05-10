@@ -1,6 +1,5 @@
 import Dashboard from "./dashboard/Dashboard";
 import UploadPage from "./uploadpage/UploadPage";
-import LibraryPage from "./librarypage/LibraryPage";
 import SearchPage from "./searchpage/SearchPage";
 import ChatPage from "./chatpage/ChatPage";
 import ComparePage from "./comparepage/ComparePage";
@@ -9,11 +8,12 @@ import { useState, useEffect } from "react";
 import * as Types from "./utils/types";
 import axios from "axios";
 import { LogoFull } from "./logo/Logo";
+import ProjectsPage from "./projectspage/ProjectsPage";
 
 const NAV_ITEMS: { id: Types.Page; label: string; icon: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: "⊞" },
   { id: "upload", label: "Upload", icon: "↑" },
-  { id: "library", label: "Library", icon: "◫" },
+  { id: "projects", label: "Projects", icon: "◫" },
   { id: "search", label: "Search", icon: "◎" },
   { id: "chat", label: "Chat", icon: "◉" },
   { id: "compare", label: "Compare", icon: "⊟" },
@@ -80,7 +80,7 @@ export default function App() {
   const pageComponents: Record<Types.Page, React.ReactNode> = {
     dashboard: <Dashboard setPage={setPage} />,
     upload: <UploadPage />,
-    library: <LibraryPage setPage={setPage} />,
+    projects: <ProjectsPage setPage={setPage} />,
     search: <SearchPage />,
     chat: <ChatPage />,
     compare: <ComparePage />,
