@@ -19,13 +19,14 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
         setError("");
         try {
             let res;
+            console.log("Backend URL:", import.meta.env.VITE_BACKEND_URL);
             if (tab === "signin") {
-                res = await axios.post("http://localhost:8000/accounts/login/signin/", {
+                res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/accounts/login/signin/`, {
                     username: email,
                     password,
                 });
             } else {
-                res = await axios.post("http://localhost:8000/accounts/login/signup/", {
+                res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/accounts/login/signup/`, {
                     username: email,
                     email,
                     password,
