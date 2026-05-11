@@ -1,9 +1,15 @@
-export type Page = "dashboard" | "upload" | "library" | "search" | "chat" | "compare";
+export type Page = "dashboard" | "projects" | "search" | "compare";
 export type Status = "processed" | "indexing" | "pending";
 export type Color = "teal" | "sky" | "amber" | "indigo";
 export type tagColor = "teal" | "sky" | "amber" | "rose" | "indigo";
 export type label = string;
-
+export type Project = {
+    id: number;
+    title: string;
+    description: string;
+    paper_count?: number;
+    created_at?: string;
+};
 export type Paper = {
     id: number;
     title: string;

@@ -38,9 +38,34 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             onLogin();
         } catch (err: unknown) {
             if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.error || "Invalid credentials or user already exists");
+                console.log(err);
+
+                // Network/server down
+                if (!err.response) {
+                    setError("Network error. Server may be offline.");
+                }
+
+                // Backend returned error
+                else if (err.response.status === 404) {
+                    setError("Account does not exist.");
+                }
+
+                else if (err.response.status === 401) {
+                    setError("Incorrect password.");
+                }
+
+                else if (err.response.status === 400) {
+                    setError("Missing email or password.");
+                }
+
+                else {
+                    setError(
+                        err.response.data?.error ||
+                        "Authentication failed."
+                    );
+                }
             } else {
-                setError("Something went wrong. Try again.");
+                setError("Something went wrong.");
             }
         } finally {
             setLoading(false);
