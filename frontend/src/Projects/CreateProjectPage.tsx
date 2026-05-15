@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import type { Project } from "../../utils/types";
+import type { Project } from "../utils/types";
 type CreateProjectPageProps = {
     close: () => void;
     onCreate?: (project: Project) => void;

@@ -28,12 +28,15 @@ ALLOWED_HOSTS = [
 
 # ── REST Framework ────────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    # Prevents 401 on anonymous OPTIONS preflight requests
-    'UNAUTHENTICATED_USER': None,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+        "accounts.permissions.IsNotArchived",   # ← blocks archived users globally
+    ],
 }
+ 
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -78,7 +81,59 @@ INSTALLED_APPS = [
     'chat',
     'papers',
     'projects',
+    "comparisons",
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    "rest_framework.authtoken",
+
+   
 ]
+SITE_ID = 1
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_VERIFICATION = "none"   # change to "mandatory" if you want email confirm
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID","")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_ID","")
+GOOGLE_CALLBACK_URL = os.getenv("GOOGLE_CALLBACK_URL", "http://localhost:5173/auth/callback/google")
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID","")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET","")
+
+GITHUB_CALLBACK_URL = os.getenv("GITHUB_CALLBACK_URL", "http://localhost:5173/auth/callback/github")
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
+}
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": GOOGLE_CLIENT_ID,
+            "secret":    GOOGLE_CLIENT_SECRET,
+        },
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    },
+    "github": {
+        "APP": {
+            "client_id": GITHUB_CLIENT_ID,
+            "secret":   GITHUB_CLIENT_SECRET,
+        },
+        "SCOPE": ["user:email"],
+    },
+}
+
+# Auto-connect social account if email already exists
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -86,7 +141,7 @@ AUTH_USER_MODEL = 'accounts.User'
 # CRITICAL: CorsMiddleware MUST be first so it handles OPTIONS preflight
 # before any authentication middleware can return a 401.
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',          # ← must be first
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,6 +149,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # ← ADD THIS
 ]
 
 ROOT_URLCONF = 'ResearchDoc.urls'
@@ -128,6 +184,16 @@ DATABASES = {
         },
     }
 }
+R2_ACCOUNT_ID = os.getenv("R2_ACCOUNT_ID")
+
+R2_ACCESS_KEY_ID = os.getenv("R2_ACCESS_KEY_ID")
+
+R2_SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY")
+
+R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME")
+
+R2_PUBLIC_URL = os.getenv("R2_PUBLIC_URL")
+OPENAI_API_KEY= os.getenv("OPENAI_API_KEY")
 
 # ── Auth password validation ──────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [

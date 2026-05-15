@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import ProjectDetailPage from "./projectdetailpage/ProjectDetailPage";
-import CreateProjectPage from "./createprojectpage/CreateProjectPage";
+import ProjectDetailPage from "./ProjectDetails";
+import CreateProjectPage from "./CreateProjectPage";
 import type { Project } from "../utils/types";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
