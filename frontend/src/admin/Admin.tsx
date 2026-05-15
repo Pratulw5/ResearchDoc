@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const API = import.meta.env.VITE_BACKEND_URL;
@@ -127,14 +127,7 @@ function Pagination({ page, totalPages, total, pageSize, onChange }: {
 
 // ── Shared small components ───────────────────────────────────────────────────
 
-function PlanBadge({ plan, plans }: { plan: string; plans: Plan[] }) {
-    const p = plans.find(p => p.value === plan) ?? { label: plan, color: "slate" };
-    return (
-        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${colorCls(p.color)}`}>
-            {p.label}
-        </span>
-    );
-}
+
 
 function StatCard({ label, value, sub }: { label: string; value: number; sub?: string }) {
     return (
@@ -445,7 +438,7 @@ function EditPlanDrawer({ plan, onClose, onSaved, onDeleted }: {
 
 // ── Plans Tab ─────────────────────────────────────────────────────────────────
 
-function PlansTab({ plans, loading, onRefresh }: {
+function PlansTab({ plans, loading }: {
     plans: Plan[];
     loading: boolean;
     onRefresh: () => void;
@@ -825,20 +818,12 @@ export default function Admin() {
     const [papers, setPapers] = useState<AdminPaper[]>([]);
     const [plans, setPlans] = useState<Plan[]>([]);
     const [loading, setLoading] = useState(false);
-    const [plansLoading, setPlansLoading] = useState(false);
+
     const [search, setSearch] = useState("");
     const [archiveTarget, setArchiveTarget] = useState<AdminUser | null>(null);
     const [showCreateSub, setShowCreateSub] = useState(false);
     const [planFilter, setPlanFilter] = useState<string>("all");
 
-    const loadPlans = useCallback(async () => {
-        if (plans.length > 0) return;
-        setPlansLoading(true);
-        try {
-            const r = await axios.get<Plan[]>(`${API}/accounts/admin/plans/`, { headers: auth() });
-            setPlans(r.data);
-        } finally { setPlansLoading(false); }
-    }, [plans.length]);
 
     const load = useCallback(async (t: Tab) => {
         setLoading(true);
