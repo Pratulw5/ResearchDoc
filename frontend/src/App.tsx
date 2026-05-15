@@ -22,7 +22,7 @@ interface Project {
   paper_count: number;
   created_at: string;
 }
-type Page = "dashboard" | "projects" | "search" | "account" | "admin";
+
 const NAV_ITEMS: { id: Types.Page; label: string; icon: React.ReactNode }[] = [
   {
     id: "dashboard", label: "Dashboard",
@@ -102,16 +102,16 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [archivedInfo, setArchivedInfo] = useState<ArchiveInfo | null>(null);
-  const [pendingPaperId, setPendingPaperId] = useState<number | undefined>(undefined);
+
   async function signOut() {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     setArchivedInfo(null);
     setAuthed(false);
-  } const handleOpenPaper = async (paperId: number, projectId: number) => {
+  } const handleOpenPaper = async (projectId: number) => {
     // If we already have the right project loaded, just set the pending paper.
     if (activeProject?.id === projectId) {
-      setPendingPaperId(paperId);
+
       setPage("projects");
       return;
     }
@@ -126,7 +126,7 @@ export default function App() {
       if (res.ok) {
         const project: Project = await res.json();
         setActiveProject(project);
-        setPendingPaperId(paperId);
+
         setPage("projects");
       }
     } catch {

@@ -336,7 +336,7 @@ export default function Timeline({ project }: { project: Project }) {
 }
 
 // ─── Gantt sub-component ──────────────────────────────────────────────────────
-function GanttView({ tasks, onEdit, onDelete }: {
+function GanttView({ tasks }: {
     tasks: Task[];
     onEdit: (t: Task) => void;
     onDelete: (id: number) => void;

@@ -68,7 +68,7 @@ function extractRefs(blocks: Block[]): string[] {
 
 function EditorToolbar({
     onInsert, onGenerateAll, generating, saved, saving, onSave,
-    projectId, paperId, hasPDF, pdfName, onAttachPDF,
+    hasPDF, pdfName, onAttachPDF,
     wordCount, extractingRefs,
     citationFormat, onCitationFormatChange,
     onInsertBibliography,
