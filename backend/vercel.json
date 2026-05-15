@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "ResearchDoc/wsgi.py",
+            "src": "backend/ResearchDoc/wsgi.py",
             "use": "@vercel/python",
             "config": {
                 "runtime": "python3.12"
@@ -12,7 +12,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "ResearchDoc/wsgi.py"
+            "dest": "backend/ResearchDoc/wsgi.py"
         }
     ]
 }
