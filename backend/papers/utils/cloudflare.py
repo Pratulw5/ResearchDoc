@@ -2,15 +2,16 @@ import uuid
 import tempfile
 from io import BytesIO
 
-from r2 import CloudflareR2Bucket
+import boto3
 from django.conf import settings
 
 
-papers = CloudflareR2Bucket(
-    name=settings.R2_BUCKET_NAME,
-    account_id=settings.R2_ACCOUNT_ID,
-    access_key_id=settings.R2_ACCESS_KEY_ID,
-    secret_access_key=settings.R2_SECRET_ACCESS_KEY,
+s3 = boto3.client(
+    "s3",
+    endpoint_url=f"https://{settings.R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
+    aws_access_key_id=settings.R2_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.R2_SECRET_ACCESS_KEY,
+    region_name="auto",
 )
 
 
@@ -28,8 +29,9 @@ def upload_asset(file, project_id, user_id, prefix="assets"):
     ext = file.name.split(".")[-1]
     key = f"{prefix}/{user_id}/{project_id}/{uuid.uuid4()}.{ext}"
     file_stream = BytesIO(file.read())
-    papers.bucket.upload_fileobj(
+    s3.upload_fileobj(
         Fileobj=file_stream,
+        Bucket=settings.R2_BUCKET_NAME,
         Key=key,
         ExtraArgs={"ContentType": file.content_type},
     )
@@ -42,12 +44,12 @@ def upload_asset(file, project_id, user_id, prefix="assets"):
 def upload_raw_bytes(img_bytes: bytes, key: str, content_type: str = "image/png") -> str:
     """
     Upload raw bytes (e.g. images extracted from a PDF) directly to R2.
-    Uses upload_fileobj so it works with the same boto3 client wrapper.
     Returns the public (or presigned) URL.
     """
     buf = BytesIO(img_bytes)
-    papers.bucket.upload_fileobj(
+    s3.upload_fileobj(
         Fileobj=buf,
+        Bucket=settings.R2_BUCKET_NAME,
         Key=key,
         ExtraArgs={"ContentType": content_type},
     )
@@ -57,10 +59,9 @@ def upload_raw_bytes(img_bytes: bytes, key: str, content_type: str = "image/png"
 def get_presigned_url(key: str, expires_in: int = 3600) -> str:
     """
     Generate a presigned URL for a private R2 object.
-    Use this if you have NOT enabled the Public Development URL.
     expires_in = seconds (default 1 hour).
     """
-    url = papers.bucket.generate_presigned_url(
+    url = s3.generate_presigned_url(
         "get_object",
         Params={"Bucket": settings.R2_BUCKET_NAME, "Key": key},
         ExpiresIn=expires_in,
@@ -71,14 +72,14 @@ def get_presigned_url(key: str, expires_in: int = 3600) -> str:
 def _download_from_r2(r2_key: str) -> bytes:
     """Download a file from Cloudflare R2. Works with private buckets."""
     buf = tempfile.SpooledTemporaryFile(max_size=50 * 1024 * 1024)
-    papers.bucket.download_fileobj(Key=r2_key, Fileobj=buf)
+    s3.download_fileobj(Bucket=settings.R2_BUCKET_NAME, Key=r2_key, Fileobj=buf)
     buf.seek(0)
     return buf.read()
 
 
 def delete_file(key):
     """Delete a file from R2."""
-    papers.bucket.delete_object(
+    s3.delete_object(
         Bucket=settings.R2_BUCKET_NAME,
         Key=key,
     )
@@ -93,5 +94,4 @@ def get_file_url(key):
     public_base = getattr(settings, "R2_PUBLIC_URL", "").strip()
     if public_base:
         return f"{public_base}/{key}"
-    # No public URL configured — generate a 1-hour presigned URL instead
     return get_presigned_url(key, expires_in=3600)
